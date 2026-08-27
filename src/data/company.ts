@@ -15,6 +15,7 @@ export const COMPANY = {
 export const NAV_LINKS = [
   { id: 'services', label: 'Услуги' },
   { id: 'about', label: 'О компании' },
+  { id: 'news', label: 'Новости' },
   { id: 'disclosure', label: 'Раскрытие' },
   { id: 'request', label: 'Заявки' },
   { id: 'tariffs', label: 'Тарифы' },

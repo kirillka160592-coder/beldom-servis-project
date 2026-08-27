@@ -78,7 +78,7 @@ const Disclosure = () => {
         <div className="grid gap-14 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
           <div>
             <SectionHeading
-              index="03"
+              index="04"
               eyebrow="Раскрытие информации"
               title={
                 <>

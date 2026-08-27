@@ -63,7 +63,7 @@ const Tariffs = () => {
     <section id="tariffs" className="border-b border-border bg-card py-24 lg:py-32">
       <div className="mx-auto max-w-[1360px] px-5 lg:px-10">
         <SectionHeading
-          index="05"
+          index="06"
           eyebrow="Тарифы и квитанции"
           title={
             <>

@@ -6,7 +6,7 @@ const Contacts = () => (
   <section id="contacts" className="border-b border-border py-24 lg:py-32">
     <div className="mx-auto max-w-[1360px] px-5 lg:px-10">
       <SectionHeading
-        index="06"
+        index="07"
         eyebrow="Контакты"
         title={
           <>

@@ -89,7 +89,7 @@ const RequestForm = () => {
         <div className="grid gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
           <div>
             <SectionHeading
-              index="04"
+              index="05"
               eyebrow="Приём заявок"
               title={
                 <>
