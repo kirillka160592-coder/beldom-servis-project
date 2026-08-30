@@ -1,9 +1,10 @@
+import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import SectionHeading from '@/components/SectionHeading';
 import { COMPANY } from '@/data/company';
 
 const Contacts = () => (
-  <section id="contacts" className="border-b border-border py-24 lg:py-32">
+  <section className="border-b border-border py-24 lg:py-32">
     <div className="mx-auto max-w-[1360px] px-5 lg:px-10">
       <SectionHeading
         index="07"
@@ -46,12 +47,12 @@ const Contacts = () => (
           </dl>
 
           <div className="mt-9 flex flex-wrap gap-3">
-            <a
-              href="#request"
+            <Link
+              to="/request"
               className="cut-btn bg-primary px-7 py-4 font-display text-[14px] uppercase tracking-[0.08em] text-primary-foreground transition-transform duration-200 hover:-translate-y-0.5"
             >
               Оставить заявку
-            </a>
+            </Link>
             <a
               href={COMPANY.dispatchPhoneHref}
               className="border border-border px-7 py-4 font-display text-[14px] uppercase tracking-[0.08em] text-foreground transition-colors hover:border-primary hover:text-primary"

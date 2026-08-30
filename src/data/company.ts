@@ -13,11 +13,11 @@ export const COMPANY = {
 } as const;
 
 export const NAV_LINKS = [
-  { id: 'services', label: 'Услуги' },
-  { id: 'about', label: 'О компании' },
-  { id: 'news', label: 'Новости' },
-  { id: 'disclosure', label: 'Раскрытие' },
-  { id: 'request', label: 'Заявки' },
-  { id: 'tariffs', label: 'Тарифы' },
-  { id: 'contacts', label: 'Контакты' },
+  { path: '/', label: 'Главная' },
+  { path: '/services', label: 'Услуги' },
+  { path: '/about', label: 'О компании' },
+  { path: '/disclosure', label: 'Раскрытие' },
+  { path: '/request', label: 'Заявки' },
+  { path: '/tariffs', label: 'Тарифы' },
+  { path: '/contacts', label: 'Контакты' },
 ] as const;

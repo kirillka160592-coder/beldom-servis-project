@@ -1,42 +1,10 @@
+import { Link } from 'react-router-dom';
 import { COMPANY } from '@/data/company';
-
-const HERO_NAV = [
-  { id: 'request', label: 'Диспетчерская' },
-  { id: 'tariffs', label: 'Тарифы' },
-  { id: 'services', label: 'Ремонт' },
-  { id: 'disclosure', label: 'Документы' },
-];
 
 const Hero = () => {
   return (
-    <section id="home" className="hero-stage">
+    <section className="hero-stage">
       <div className="hero-left">
-        <header className="hero-top">
-          <div className="flex items-center gap-3">
-            <div className="cut-mark h-[34px] w-[34px] bg-primary" aria-hidden="true" />
-            <div className="font-display text-[1.05em] font-semibold uppercase leading-none tracking-[0.02em]">
-              {COMPANY.short}
-            </div>
-          </div>
-          <nav className="hidden gap-[26px] md:flex">
-            {HERO_NAV.map((item) => (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                className="border-b border-transparent py-1 text-[0.8em] uppercase tracking-[0.09em] text-muted-foreground transition-colors hover:border-b-primary hover:text-foreground"
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
-          <a
-            href={COMPANY.dispatchPhoneHref}
-            className="font-display text-[0.9em] uppercase tracking-[0.06em] text-foreground md:hidden"
-          >
-            {COMPANY.dispatchPhone}
-          </a>
-        </header>
-
         <div className="hero-content">
           <div className="hero-eyebrow">Управляющая организация · {COMPANY.city}</div>
           <h1 className="hero-h1">
@@ -56,9 +24,9 @@ const Hero = () => {
             Течь в&nbsp;подвале, темнота в&nbsp;подъезде, холодная батарея. Диспетчер принимает
             заявку ночью так&nbsp;же, как днём: <b>{COMPANY.dispatchPhone}</b>.
           </p>
-          <a className="hero-cta" href="#request">
+          <Link className="hero-cta" to="/request">
             Оставить заявку диспетчеру
-          </a>
+          </Link>
         </div>
       </div>
 

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { COMPANY, NAV_LINKS } from '@/data/company';
 
 const Footer = () => (
@@ -23,13 +24,13 @@ const Footer = () => (
           </h4>
           <ul className="mt-5 space-y-2.5">
             {NAV_LINKS.map((l) => (
-              <li key={l.id}>
-                <a
-                  href={`#${l.id}`}
+              <li key={l.path}>
+                <Link
+                  to={l.path}
                   className="link-underline text-[15px] text-foreground/85 transition-colors hover:text-primary"
                 >
                   {l.label}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>

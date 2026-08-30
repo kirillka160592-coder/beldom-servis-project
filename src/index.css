@@ -163,7 +163,7 @@
 
 /* ── HERO (перенос 1-в-1 из выбранного варианта) ── */
 .hero-stage {
-  min-height: 100svh;
+  min-height: calc(100svh - 68px);
   display: grid;
   grid-template-columns: 1fr 528px;
 }
@@ -173,15 +173,6 @@
   flex-direction: column;
   padding: 40px 64px 56px;
   min-width: 0;
-}
-
-.hero-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 32px;
-  padding-bottom: 22px;
-  border-bottom: 1px solid hsl(var(--border));
 }
 
 .hero-content {
@@ -419,14 +410,10 @@
   }
 }
 
-.hero-top,
 .hero-eyebrow,
 .hero-sub,
 .hero-cta {
   animation: hero-fade 0.7s ease both;
-}
-.hero-top {
-  animation-delay: 0.05s;
 }
 .hero-eyebrow {
   animation-delay: 0.35s;

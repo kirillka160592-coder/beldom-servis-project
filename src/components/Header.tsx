@@ -1,17 +1,10 @@
 import { useEffect, useState } from 'react';
+import { Link, NavLink } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { COMPANY, NAV_LINKS } from '@/data/company';
 
 const Header = () => {
-  const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 420);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
@@ -22,30 +15,29 @@ const Header = () => {
 
   return (
     <>
-      <header
-        className={`fixed inset-x-0 top-0 z-50 border-b transition-all duration-300 ${
-          scrolled
-            ? 'translate-y-0 border-border bg-background/95 opacity-100 backdrop-blur'
-            : '-translate-y-full border-transparent opacity-0'
-        }`}
-      >
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
         <div className="mx-auto flex h-[68px] max-w-[1360px] items-center justify-between gap-6 px-5 lg:px-10">
-          <a href="#home" className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-3">
             <span className="cut-mark h-7 w-7 bg-primary" aria-hidden="true" />
             <span className="font-display text-base font-semibold uppercase leading-none tracking-[0.02em]">
               {COMPANY.short}
             </span>
-          </a>
+          </Link>
 
           <nav className="hidden items-center gap-7 lg:flex">
             {NAV_LINKS.map((item) => (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                className="link-underline text-[13px] uppercase tracking-[0.09em] text-muted-foreground transition-colors hover:text-foreground"
+              <NavLink
+                key={item.path}
+                to={item.path}
+                end={item.path === '/'}
+                className={({ isActive }) =>
+                  `link-underline text-[13px] uppercase tracking-[0.09em] transition-colors hover:text-foreground ${
+                    isActive ? 'text-foreground' : 'text-muted-foreground'
+                  }`
+                }
               >
                 {item.label}
-              </a>
+              </NavLink>
             ))}
           </nav>
 
@@ -100,15 +92,20 @@ const Header = () => {
           </div>
           <nav className="flex flex-1 flex-col gap-1 px-6 py-6">
             {NAV_LINKS.map((item, i) => (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
+              <NavLink
+                key={item.path}
+                to={item.path}
+                end={item.path === '/'}
                 onClick={() => setOpen(false)}
-                className="border-b border-border/60 py-4 font-display text-xl uppercase tracking-tight text-foreground transition-colors hover:text-primary"
+                className={({ isActive }) =>
+                  `border-b border-border/60 py-4 font-display text-xl uppercase tracking-tight transition-colors hover:text-primary ${
+                    isActive ? 'text-primary' : 'text-foreground'
+                  }`
+                }
               >
                 <span className="mr-3 text-xs text-muted-foreground">0{i + 1}</span>
                 {item.label}
-              </a>
+              </NavLink>
             ))}
           </nav>
           <div className="border-t border-border px-6 py-6">

@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import SectionHeading from '@/components/SectionHeading';
 import { COMPANY } from '@/data/company';
@@ -102,26 +103,35 @@ const RequestForm = () => {
 
             <div className="reveal mt-10 space-y-px bg-border">
               {[
-                { icon: 'PhoneCall', title: 'Аварийная служба', value: COMPANY.dispatchPhone, href: COMPANY.dispatchPhoneHref },
-                { icon: 'Mail', title: 'Электронная почта', value: COMPANY.email, href: `mailto:${COMPANY.email}` },
-                { icon: 'MapPin', title: 'Офис', value: COMPANY.address, href: '#contacts' },
-              ].map((c) => (
-                <a
-                  key={c.title}
-                  href={c.href}
-                  className="group flex items-center gap-4 bg-card px-6 py-5 transition-colors hover:bg-background"
-                >
-                  <Icon name={c.icon} fallback="Phone" size={20} className="text-primary" />
-                  <span>
-                    <span className="block text-[12px] uppercase tracking-[0.16em] text-muted-foreground">
-                      {c.title}
+                { icon: 'PhoneCall', title: 'Аварийная служба', value: COMPANY.dispatchPhone, href: COMPANY.dispatchPhoneHref, internal: false },
+                { icon: 'Mail', title: 'Электронная почта', value: COMPANY.email, href: `mailto:${COMPANY.email}`, internal: false },
+                { icon: 'MapPin', title: 'Офис', value: COMPANY.address, href: '/contacts', internal: true },
+              ].map((c) => {
+                const content = (
+                  <>
+                    <Icon name={c.icon} fallback="Phone" size={20} className="text-primary" />
+                    <span>
+                      <span className="block text-[12px] uppercase tracking-[0.16em] text-muted-foreground">
+                        {c.title}
+                      </span>
+                      <span className="mt-0.5 block text-[15px] text-foreground transition-colors group-hover:text-primary">
+                        {c.value}
+                      </span>
                     </span>
-                    <span className="mt-0.5 block text-[15px] text-foreground transition-colors group-hover:text-primary">
-                      {c.value}
-                    </span>
-                  </span>
-                </a>
-              ))}
+                  </>
+                );
+                const cls =
+                  'group flex items-center gap-4 bg-card px-6 py-5 transition-colors hover:bg-background';
+                return c.internal ? (
+                  <Link key={c.title} to={c.href} className={cls}>
+                    {content}
+                  </Link>
+                ) : (
+                  <a key={c.title} href={c.href} className={cls}>
+                    {content}
+                  </a>
+                );
+              })}
             </div>
           </div>
 
