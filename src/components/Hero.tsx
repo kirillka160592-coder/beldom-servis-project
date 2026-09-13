@@ -31,7 +31,7 @@ const Hero = () => {
         </div>
       </div>
 
-      <div className="hero-panel bg-amber-400">
+      <div className="hero-panel">
         <div className="hero-city" aria-hidden="true">
           <div className="hero-block hero-block--a">
             {Array.from({ length: 5 }).map((_, i) => (

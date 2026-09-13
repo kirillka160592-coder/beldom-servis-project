@@ -163,20 +163,20 @@
 
 /* ── HERO (перенос 1-в-1 из выбранного варианта) ── */
 .hero-stage {
-  min-height: calc(100svh - 68px);
+  min-height: clamp(480px, 64svh, 620px);
   display: grid;
-  grid-template-columns: 1fr 528px;
+  grid-template-columns: 1fr 440px;
 }
 
 .hero-left {
   display: flex;
   flex-direction: column;
-  padding: 40px 64px 56px;
+  justify-content: center;
+  padding: 40px 64px;
   min-width: 0;
 }
 
 .hero-content {
-  margin-top: auto;
   padding-bottom: 6px;
 }
 
@@ -191,7 +191,7 @@
 .hero-h1 {
   font-family: "Oswald", sans-serif;
   font-weight: 600;
-  font-size: clamp(44px, 6.6vw, 78px);
+  font-size: clamp(40px, 5.4vw, 64px);
   line-height: 1.02;
   letter-spacing: -0.03em;
   text-transform: uppercase;
@@ -296,11 +296,13 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 96px;
+  bottom: 76px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  gap: 14px;
+  gap: 11px;
+  transform: scale(0.78);
+  transform-origin: 50% 100%;
 }
 
 .hero-block {
@@ -440,24 +442,23 @@
 @media (max-width: 1023px) {
   .hero-stage {
     grid-template-columns: 1fr;
+    min-height: auto;
   }
   .hero-left {
-    padding: 28px 22px 44px;
-    min-height: 78svh;
+    padding: 36px 22px 32px;
   }
   .hero-panel {
-    min-height: 380px;
+    min-height: 300px;
   }
   .hero-panel::before {
     display: none;
   }
   .hero-city {
-    bottom: 76px;
-    transform: scale(0.8);
-    transform-origin: 50% 100%;
+    bottom: 60px;
+    transform: scale(0.62);
   }
   .hero-ground {
-    height: 92px;
+    height: 76px;
   }
 }
 
