@@ -81,8 +81,8 @@ const Contacts = () => (
             </div>
             <div className="mt-6 space-y-3 text-primary-foreground">
               {[
-                ['Пн — Чт', '08:30 — 17:30'],
-                ['Пт', '08:30 — 16:15'],
+                ['Пн — Пт', '08:00 — 17:00'],
+                ['Обед', '12:00 — 13:00'],
                 ['Сб — Вс', 'только аварийные заявки'],
               ].map(([k, v]) => (
                 <div key={k} className="flex items-baseline justify-between gap-4 border-b border-primary-foreground/20 pb-3">

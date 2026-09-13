@@ -8,6 +8,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
 
 type NewsItem = {
   id: number;
@@ -18,6 +25,12 @@ type NewsItem = {
   excerpt: string;
   body: string[];
   addresses?: string;
+  /**
+   * Фотографии публикации. Первая используется как обложка на карточке,
+   * все — как слайды в галерее при открытии новости.
+   * Как добавить свои фото — см. инструкцию в конце файла.
+   */
+  images?: string[];
 };
 
 const NEWS: NewsItem[] = [
@@ -35,6 +48,9 @@ const NEWS: NewsItem[] = [
       'Если после включения из крана идёт мутная или ржавая вода — дайте стечь 3–5 минут. Если ситуация не изменилась, оставьте заявку в диспетчерской.',
     ],
     addresses: 'Ленина, 62 · 64 · 68 · 70',
+    images: [
+      'https://cdn.poehali.dev/projects/7488612f-bc39-44e9-b251-23f2645125bb/files/22b8bcc2-7679-4834-997a-c1e54720c7fe.jpg',
+    ],
   },
   {
     id: 2,
@@ -50,6 +66,10 @@ const NEWS: NewsItem[] = [
       'Собственникам верхних этажей, у которых ранее фиксировались протечки, просим сообщить о состоянии потолков после первых дождей.',
     ],
     addresses: 'Косоротова, 11',
+    images: [
+      'https://cdn.poehali.dev/projects/7488612f-bc39-44e9-b251-23f2645125bb/files/658ab32f-a043-4588-a350-234f07734679.jpg',
+      'https://cdn.poehali.dev/projects/7488612f-bc39-44e9-b251-23f2645125bb/files/ca89026e-7b8e-464c-bae3-cf2fdabadf1a.jpg',
+    ],
   },
   {
     id: 3,
@@ -93,6 +113,9 @@ const NEWS: NewsItem[] = [
       'О неработающем светильнике сообщайте в диспетчерскую с указанием подъезда и этажа.',
     ],
     addresses: 'Точисского, 19 · 21 · 5 Июля, 8 · 10 · 12',
+    images: [
+      'https://cdn.poehali.dev/projects/7488612f-bc39-44e9-b251-23f2645125bb/files/ee4802a0-8169-41ca-ac7b-030188303c79.jpg',
+    ],
   },
   {
     id: 6,
@@ -167,83 +190,113 @@ const News = () => {
 
         <div className="mt-14 grid gap-px bg-border lg:grid-cols-[1.15fr_0.85fr]">
           {lead ? (
-            <article className="reveal group flex flex-col justify-between bg-card p-8 lg:p-10">
-              <div>
-                <div className="flex flex-wrap items-center gap-4">
-                  <span className="inline-flex items-center gap-2 bg-primary px-3 py-1.5 font-display text-[11px] uppercase tracking-[0.14em] text-primary-foreground">
-                    <Icon
-                      name={CATEGORY_ICON[lead.category]}
-                      fallback="Info"
-                      size={13}
-                    />
-                    {lead.category}
-                  </span>
-                  <time
-                    dateTime={lead.date}
-                    className="text-[13px] uppercase tracking-[0.12em] text-muted-foreground"
-                  >
-                    {lead.dateLabel}
-                  </time>
-                </div>
-                <h3 className="mt-7 font-display text-[clamp(24px,3vw,36px)] uppercase leading-[1.08] tracking-tight">
-                  {lead.title}
-                </h3>
-                <p className="mt-5 max-w-xl text-[16px] leading-relaxed text-muted-foreground">
-                  {lead.excerpt}
-                </p>
-                {lead.addresses ? (
-                  <p className="mt-5 flex items-start gap-2 text-[13px] leading-relaxed text-muted-foreground">
-                    <Icon name="MapPin" size={15} className="mt-0.5 shrink-0 text-accent" />
-                    {lead.addresses}
+            <article className="reveal group flex flex-col justify-between bg-card">
+              {lead.images?.[0] ? (
+                <button
+                  type="button"
+                  onClick={() => setActive(lead)}
+                  className="block aspect-[16/9] w-full overflow-hidden bg-background"
+                >
+                  <img
+                    src={lead.images[0]}
+                    alt={lead.title}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </button>
+              ) : null}
+              <div className="flex flex-1 flex-col justify-between p-8 lg:p-10">
+                <div>
+                  <div className="flex flex-wrap items-center gap-4">
+                    <span className="inline-flex items-center gap-2 bg-primary px-3 py-1.5 font-display text-[11px] uppercase tracking-[0.14em] text-primary-foreground">
+                      <Icon
+                        name={CATEGORY_ICON[lead.category]}
+                        fallback="Info"
+                        size={13}
+                      />
+                      {lead.category}
+                    </span>
+                    <time
+                      dateTime={lead.date}
+                      className="text-[13px] uppercase tracking-[0.12em] text-muted-foreground"
+                    >
+                      {lead.dateLabel}
+                    </time>
+                  </div>
+                  <h3 className="mt-7 font-display text-[clamp(24px,3vw,36px)] uppercase leading-[1.08] tracking-tight">
+                    {lead.title}
+                  </h3>
+                  <p className="mt-5 max-w-xl text-[16px] leading-relaxed text-muted-foreground">
+                    {lead.excerpt}
                   </p>
-                ) : null}
+                  {lead.addresses ? (
+                    <p className="mt-5 flex items-start gap-2 text-[13px] leading-relaxed text-muted-foreground">
+                      <Icon name="MapPin" size={15} className="mt-0.5 shrink-0 text-accent" />
+                      {lead.addresses}
+                    </p>
+                  ) : null}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActive(lead)}
+                  className="mt-9 inline-flex items-center gap-3 self-start font-display text-[13px] uppercase tracking-[0.12em] text-foreground transition-colors hover:text-primary"
+                >
+                  Читать полностью
+                  <Icon name="ArrowRight" size={16} />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setActive(lead)}
-                className="mt-9 inline-flex items-center gap-3 self-start font-display text-[13px] uppercase tracking-[0.12em] text-foreground transition-colors hover:text-primary"
-              >
-                Читать полностью
-                <Icon name="ArrowRight" size={16} />
-              </button>
             </article>
           ) : null}
 
           <div className="grid gap-px bg-border">
             {rest.map((n) => (
-              <article key={n.id} className="reveal bg-card p-7 lg:p-8">
-                <div className="flex flex-wrap items-center gap-3">
-                  <Icon
-                    name={CATEGORY_ICON[n.category]}
-                    fallback="Info"
-                    size={15}
-                    className="text-accent"
-                  />
-                  <span className="font-display text-[11px] uppercase tracking-[0.14em] text-accent">
-                    {n.category}
-                  </span>
-                  <span className="h-px w-6 bg-border" />
-                  <time
-                    dateTime={n.date}
-                    className="text-[12px] uppercase tracking-[0.1em] text-muted-foreground"
+              <article key={n.id} className="reveal flex gap-5 bg-card p-7 lg:p-8">
+                {n.images?.[0] ? (
+                  <button
+                    type="button"
+                    onClick={() => setActive(n)}
+                    className="hidden h-[92px] w-[120px] shrink-0 overflow-hidden bg-background sm:block"
                   >
-                    {n.dateLabel}
-                  </time>
+                    <img
+                      src={n.images[0]}
+                      alt={n.title}
+                      className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                    />
+                  </button>
+                ) : null}
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Icon
+                      name={CATEGORY_ICON[n.category]}
+                      fallback="Info"
+                      size={15}
+                      className="text-accent"
+                    />
+                    <span className="font-display text-[11px] uppercase tracking-[0.14em] text-accent">
+                      {n.category}
+                    </span>
+                    <span className="h-px w-6 bg-border" />
+                    <time
+                      dateTime={n.date}
+                      className="text-[12px] uppercase tracking-[0.1em] text-muted-foreground"
+                    >
+                      {n.dateLabel}
+                    </time>
+                  </div>
+                  <h3 className="mt-4 font-display text-[18px] uppercase leading-tight tracking-tight">
+                    {n.title}
+                  </h3>
+                  <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
+                    {n.excerpt}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setActive(n)}
+                    className="mt-5 inline-flex items-center gap-2 font-display text-[12px] uppercase tracking-[0.12em] text-foreground transition-colors hover:text-primary"
+                  >
+                    Подробнее
+                    <Icon name="ArrowRight" size={14} />
+                  </button>
                 </div>
-                <h3 className="mt-4 font-display text-[18px] uppercase leading-tight tracking-tight">
-                  {n.title}
-                </h3>
-                <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
-                  {n.excerpt}
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setActive(n)}
-                  className="mt-5 inline-flex items-center gap-2 font-display text-[12px] uppercase tracking-[0.12em] text-foreground transition-colors hover:text-primary"
-                >
-                  Подробнее
-                  <Icon name="ArrowRight" size={14} />
-                </button>
               </article>
             ))}
             {!rest.length && lead ? (
@@ -277,6 +330,31 @@ const News = () => {
             </DialogTitle>
             <DialogDescription className="sr-only">Текст публикации</DialogDescription>
           </DialogHeader>
+
+          {active?.images?.length ? (
+            <Carousel className="w-full">
+              <CarouselContent>
+                {active.images.map((src, i) => (
+                  <CarouselItem key={src}>
+                    <div className="aspect-[16/10] w-full overflow-hidden bg-background">
+                      <img
+                        src={src}
+                        alt={`${active.title} — фото ${i + 1}`}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              {active.images.length > 1 ? (
+                <>
+                  <CarouselPrevious className="left-3 rounded-none border-border bg-card/90" />
+                  <CarouselNext className="right-3 rounded-none border-border bg-card/90" />
+                </>
+              ) : null}
+            </Carousel>
+          ) : null}
+
           <div className="space-y-4 text-[15px] leading-relaxed text-muted-foreground">
             {active?.body.map((p, i) => (
               <p key={i}>{p}</p>
@@ -295,3 +373,15 @@ const News = () => {
 };
 
 export default News;
+
+/**
+ * КАК ДОБАВИТЬ ФОТОГРАФИИ К НОВОСТИ
+ * 1. Загрузите изображение в проект (просто отправьте его в чат Юре — он разместит
+ *    файл и пришлёт вам ссылку на него).
+ * 2. Найдите нужную новость в массиве NEWS выше (или добавьте новый объект по
+ *    образцу — id, category, date, dateLabel, title, excerpt, body, addresses).
+ * 3. Впишите ссылки на фото в поле images: ['ссылка-1', 'ссылка-2', ...].
+ *    Первая ссылка — обложка карточки, все ссылки вместе — слайды галереи,
+ *    которая открывается по клику «Подробнее» / «Читать полностью».
+ * Поле images необязательное — без него новость просто не покажет фото.
+ */

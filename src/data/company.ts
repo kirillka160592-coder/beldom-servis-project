@@ -6,7 +6,7 @@ export const COMPANY = {
   dispatchPhoneHref: 'tel:+73479231499',
   officePhone: '8 (34792) 3-15-40',
   officePhoneHref: 'tel:+73479231540',
-  email: 'info@beldomservis.ru',
+  email: 'domservis.b@mail.ru',
   address: '453500, Республика Башкортостан, г. Белорецк, ул. Ленина, 68',
   inn: '0256000000',
   ogrn: '1120256000000',

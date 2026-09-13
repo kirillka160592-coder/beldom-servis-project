@@ -97,9 +97,8 @@ const About = () => (
             <h3 className="font-display text-[20px] uppercase tracking-tight">График приёма</h3>
             <dl className="mt-6 space-y-3 text-[15px]">
               {[
-                ['Понедельник — четверг', '08:30 — 17:30'],
-                ['Пятница', '08:30 — 16:15'],
-                ['Обед', '13:00 — 14:00'],
+                ['Понедельник — пятница', '08:00 — 17:00'],
+                ['Обед', '12:00 — 13:00'],
                 ['Приём директора', 'вторник, 15:00 — 17:00'],
               ].map(([k, v]) => (
                 <div key={k} className="flex items-baseline justify-between gap-4 border-b border-border/60 pb-3">
