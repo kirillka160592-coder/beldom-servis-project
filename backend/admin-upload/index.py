@@ -20,6 +20,11 @@ ALLOWED_TYPES = {
     'image/png': 'png',
     'image/webp': 'webp',
     'image/gif': 'gif',
+    'application/pdf': 'pdf',
+    'application/msword': 'doc',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+    'application/vnd.ms-excel': 'xls',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
 }
 
 
@@ -37,9 +42,9 @@ def check_auth(cur, event) -> bool:
 
 
 def handler(event: dict, context) -> dict:
-    """Загрузка изображений в файловое хранилище и медиабиблиотека сайта.
-    GET — список сохранённых изображений (требует авторизации).
-    POST — загрузить новое изображение (base64), сохранить в S3 и в библиотеку, вернуть CDN-ссылку.
+    """Загрузка файлов (изображения, PDF, Word, Excel) в хранилище и медиабиблиотека сайта.
+    GET — список сохранённых файлов (требует авторизации).
+    POST — загрузить новый файл (base64), сохранить в S3 и в библиотеку, вернуть CDN-ссылку.
     DELETE — удалить запись из библиотеки (сам файл в S3 не удаляется).
     """
     method = event.get('httpMethod', 'GET')
@@ -56,7 +61,7 @@ def handler(event: dict, context) -> dict:
             return {'statusCode': 401, 'headers': headers, 'body': json.dumps({'error': 'Требуется авторизация'})}
 
         if method == 'GET':
-            cur.execute("SELECT id, url, filename, label, created_at FROM media_library ORDER BY created_at DESC")
+            cur.execute("SELECT id, url, filename, label, content_type, created_at FROM media_library ORDER BY created_at DESC")
             rows = cur.fetchall()
             result = [
                 {
@@ -64,6 +69,7 @@ def handler(event: dict, context) -> dict:
                     'url': r['url'],
                     'filename': r['filename'],
                     'label': r['label'],
+                    'contentType': r['content_type'],
                     'createdAt': r['created_at'].isoformat(),
                 }
                 for r in rows
@@ -99,8 +105,8 @@ def handler(event: dict, context) -> dict:
             cdn_url = f"https://cdn.poehali.dev/projects/{os.environ['AWS_ACCESS_KEY_ID']}/bucket/{key}"
 
             cur.execute(
-                "INSERT INTO media_library (url, filename, label) VALUES (%s, %s, %s) RETURNING id, created_at",
-                (cdn_url, filename, label),
+                "INSERT INTO media_library (url, filename, label, content_type) VALUES (%s, %s, %s, %s) RETURNING id, created_at",
+                (cdn_url, filename, label, content_type),
             )
             row = cur.fetchone()
             conn.commit()
@@ -113,6 +119,7 @@ def handler(event: dict, context) -> dict:
                     'url': cdn_url,
                     'filename': filename,
                     'label': label,
+                    'contentType': content_type,
                     'createdAt': row['created_at'].isoformat(),
                 }),
             }

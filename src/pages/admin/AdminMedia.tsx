@@ -16,6 +16,29 @@ import { uploadApi, type MediaItem } from '@/lib/api';
 import { toast } from '@/hooks/use-toast';
 import { useAdminAuth } from '@/contexts/AdminAuthContext';
 
+const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+const DOC_ICON: Record<string, string> = {
+  'application/pdf': 'FileText',
+  'application/msword': 'FileType2',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'FileType2',
+  'application/vnd.ms-excel': 'FileSpreadsheet',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'FileSpreadsheet',
+};
+
+const DOC_LABEL: Record<string, string> = {
+  'application/pdf': 'PDF',
+  'application/msword': 'Word',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'Word',
+  'application/vnd.ms-excel': 'Excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'Excel',
+};
+
+const isImage = (contentType: string | null) => !!contentType && IMAGE_TYPES.includes(contentType);
+
+const ACCEPT =
+  'image/png,image/jpeg,image/webp,image/gif,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
 const AdminMedia = () => {
   const { login } = useAdminAuth();
   const [items, setItems] = useState<MediaItem[]>([]);
@@ -23,6 +46,7 @@ const AdminMedia = () => {
   const [uploading, setUploading] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState<'all' | 'images' | 'docs'>('all');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const load = () => {
@@ -43,10 +67,24 @@ const AdminMedia = () => {
     if (!files || !files.length) return;
     setUploading(true);
     try {
+      let rejected = 0;
       for (const file of Array.from(files)) {
+        const supported = ACCEPT.split(',').includes(file.type);
+        if (!supported) {
+          rejected += 1;
+          continue;
+        }
         await uploadApi.upload(file);
       }
-      toast({ title: files.length > 1 ? 'Изображения загружены' : 'Изображение загружено' });
+      if (rejected) {
+        toast({
+          title: 'Часть файлов не загружена',
+          description: 'Поддерживаются изображения, PDF, Word и Excel',
+          variant: 'destructive',
+        });
+      } else {
+        toast({ title: files.length > 1 ? 'Файлы загружены' : 'Файл загружен' });
+      }
       load();
     } catch {
       toast({ title: 'Не удалось загрузить файл', variant: 'destructive' });
@@ -69,7 +107,7 @@ const AdminMedia = () => {
     if (deleteId == null) return;
     try {
       await uploadApi.remove(deleteId);
-      toast({ title: 'Изображение удалено из библиотеки' });
+      toast({ title: 'Файл удалён из библиотеки' });
       load();
     } catch {
       toast({ title: 'Не удалось удалить', variant: 'destructive' });
@@ -79,6 +117,8 @@ const AdminMedia = () => {
   };
 
   const filtered = items.filter((i) => {
+    if (filter === 'images' && !isImage(i.contentType)) return false;
+    if (filter === 'docs' && isImage(i.contentType)) return false;
     if (!search.trim()) return true;
     const q = search.toLowerCase();
     return (i.filename || '').toLowerCase().includes(q) || (i.label || '').toLowerCase().includes(q);
@@ -90,16 +130,17 @@ const AdminMedia = () => {
         <div>
           <h1 className="font-display text-[26px] uppercase tracking-tight">Медиабиблиотека</h1>
           <p className="mt-1 text-[13px] text-muted-foreground">
-            Изображения для вставки в новости, услуги, документы и другие разделы сайта. Этот раздел виден только в админке.
+            Изображения и документы (PDF, Word, Excel) для вставки в новости, услуги, раскрытие
+            информации и другие разделы сайта. Этот раздел виден только в админке.
           </p>
         </div>
         <label className="cut-btn inline-flex cursor-pointer items-center gap-2 bg-primary px-6 py-3 font-display text-[13px] uppercase tracking-[0.08em] text-primary-foreground transition-transform hover:-translate-y-0.5">
           <Icon name={uploading ? 'Loader2' : 'Upload'} size={16} className={uploading ? 'animate-spin' : ''} />
-          {uploading ? 'Загружаем…' : 'Загрузить изображения'}
+          {uploading ? 'Загружаем…' : 'Загрузить файлы'}
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/png,image/jpeg,image/webp,image/gif"
+            accept={ACCEPT}
             multiple
             onChange={(e) => handleFiles(e.target.files)}
             disabled={uploading}
@@ -108,13 +149,35 @@ const AdminMedia = () => {
         </label>
       </div>
 
-      <div className="mt-6 max-w-sm">
-        <Input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Поиск по имени файла…"
-          className="h-11 rounded-none border-border bg-background"
-        />
+      <div className="mt-6 flex flex-wrap items-center gap-4">
+        <div className="max-w-sm flex-1">
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Поиск по имени файла…"
+            className="h-11 rounded-none border-border bg-background"
+          />
+        </div>
+        <div className="flex gap-px bg-border">
+          {[
+            { key: 'all' as const, label: 'Все' },
+            { key: 'images' as const, label: 'Изображения' },
+            { key: 'docs' as const, label: 'Документы' },
+          ].map((f) => (
+            <button
+              key={f.key}
+              type="button"
+              onClick={() => setFilter(f.key)}
+              className={`px-4 py-2.5 font-display text-[12px] uppercase tracking-[0.08em] transition-colors ${
+                filter === f.key
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-card text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {loading ? (
@@ -123,12 +186,21 @@ const AdminMedia = () => {
         <div className="mt-8 grid grid-cols-2 gap-px bg-border sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {filtered.map((item) => (
             <div key={item.id} className="group relative bg-card">
-              <div className="aspect-square w-full overflow-hidden bg-background">
-                <img
-                  src={item.url}
-                  alt={item.filename || ''}
-                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
+              <div className="flex aspect-square w-full items-center justify-center overflow-hidden bg-background">
+                {isImage(item.contentType) ? (
+                  <img
+                    src={item.url}
+                    alt={item.filename || ''}
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                    <Icon name={DOC_ICON[item.contentType || ''] || 'File'} fallback="File" size={40} />
+                    <span className="font-display text-[11px] uppercase tracking-[0.1em]">
+                      {DOC_LABEL[item.contentType || ''] || 'Файл'}
+                    </span>
+                  </div>
+                )}
               </div>
               <div className="p-3">
                 <p className="truncate text-[12px] text-muted-foreground" title={item.filename || ''}>
@@ -156,7 +228,7 @@ const AdminMedia = () => {
           ))}
           {!filtered.length && (
             <div className="col-span-full bg-card p-8 text-center text-muted-foreground">
-              {items.length ? 'Ничего не найдено' : 'В библиотеке пока нет изображений — загрузите первое'}
+              {items.length ? 'Ничего не найдено' : 'В библиотеке пока нет файлов — загрузите первый'}
             </div>
           )}
         </div>
@@ -165,18 +237,18 @@ const AdminMedia = () => {
       <div className="mt-8 max-w-2xl border border-accent/40 bg-accent/5 p-4 text-[13px] leading-relaxed text-muted-foreground">
         <p className="flex items-start gap-2">
           <Icon name="Info" size={16} className="mt-0.5 shrink-0 text-accent" />
-          Загрузите изображение сюда один раз, скопируйте ссылку кнопкой «Ссылка» и вставьте её в
-          нужное поле — например, в фото новости или документ раздела «Раскрытие информации».
+          Загрузите файл сюда один раз, скопируйте ссылку кнопкой «Ссылка» и вставьте её в нужное
+          поле — например, в фото новости или в документ раздела «Раскрытие информации».
         </p>
       </div>
 
       <AlertDialog open={deleteId != null} onOpenChange={(o) => !o && setDeleteId(null)}>
         <AlertDialogContent className="rounded-none border-border bg-card">
           <AlertDialogHeader>
-            <AlertDialogTitle>Удалить изображение из библиотеки?</AlertDialogTitle>
+            <AlertDialogTitle>Удалить файл из библиотеки?</AlertDialogTitle>
             <AlertDialogDescription>
-              Ссылка перестанет отображаться здесь. Если она уже используется на сайте — картинка
-              там может пропасть.
+              Ссылка перестанет отображаться здесь. Если она уже используется на сайте — файл там
+              может перестать открываться.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

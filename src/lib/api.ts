@@ -93,6 +93,7 @@ export type MediaItem = {
   url: string;
   filename: string | null;
   label: string | null;
+  contentType: string | null;
   createdAt: string;
 };
 

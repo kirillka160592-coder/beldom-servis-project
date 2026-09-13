@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { newsApi, uploadApi, type NewsItemApi } from '@/lib/api';
 import { toast } from '@/hooks/use-toast';
+import MediaPicker from '@/components/admin/MediaPicker';
 
 const CATEGORIES = ['Работы', 'Отключения', 'Объявления', 'Отчёты'];
 
@@ -61,6 +62,7 @@ const AdminNews = () => {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   const load = () => {
     setLoading(true);
@@ -344,6 +346,14 @@ const AdminNews = () => {
                     className="hidden"
                   />
                 </label>
+                <button
+                  type="button"
+                  onClick={() => setPickerOpen(true)}
+                  className="flex h-24 w-32 flex-col items-center justify-center gap-1 border border-dashed border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+                >
+                  <Icon name="Images" size={20} />
+                  <span className="text-[11px] uppercase tracking-[0.08em]">Из библиотеки</span>
+                </button>
               </div>
               <p className="text-[12px] text-muted-foreground">
                 Первое фото — обложка карточки. Все фото вместе — слайды галереи в новости.
@@ -376,6 +386,13 @@ const AdminNews = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <MediaPicker
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        imagesOnly
+        onSelect={(item) => setForm((p) => ({ ...p, images: [...p.images, item.url] }))}
+      />
     </AdminLayout>
   );
 };

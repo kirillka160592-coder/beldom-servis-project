@@ -4,6 +4,16 @@ import Icon from '@/components/ui/icon';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { contentApi } from '@/lib/api';
 import { toast } from '@/hooks/use-toast';
 
@@ -14,10 +24,17 @@ type ServicesData = {
   groups: ServiceGroup[];
 };
 
+const slugify = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[^a-zа-яё0-9]+/gi, '-')
+    .replace(/(^-|-$)/g, '') || `group-${Date.now()}`;
+
 const AdminServices = () => {
   const [data, setData] = useState<ServicesData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [removeGroupIndex, setRemoveGroupIndex] = useState<number | null>(null);
 
   useEffect(() => {
     contentApi
@@ -62,6 +79,38 @@ const AdminServices = () => {
     setData({ ...data, groups: next });
   };
 
+  const addGroup = () => {
+    const label = 'Новая категория';
+    const newGroup: ServiceGroup = {
+      id: slugify(label + '-' + Date.now()),
+      label,
+      lead: 'Краткое описание категории услуг.',
+      items: [],
+    };
+    setData({ ...data, groups: [...data.groups, newGroup] });
+  };
+
+  const confirmRemoveGroup = () => {
+    if (removeGroupIndex == null) return;
+    setData({ ...data, groups: data.groups.filter((_, i) => i !== removeGroupIndex) });
+    setRemoveGroupIndex(null);
+  };
+
+  const addItem = (gi: number) => {
+    const next = [...data.groups];
+    next[gi] = {
+      ...next[gi],
+      items: [...next[gi].items, { icon: 'Wrench', title: 'Новая услуга', text: 'Описание услуги.' }],
+    };
+    setData({ ...data, groups: next });
+  };
+
+  const removeItem = (gi: number, ii: number) => {
+    const next = [...data.groups];
+    next[gi] = { ...next[gi], items: next[gi].items.filter((_, i) => i !== ii) };
+    setData({ ...data, groups: next });
+  };
+
   return (
     <AdminLayout>
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -77,7 +126,15 @@ const AdminServices = () => {
         </button>
       </div>
 
-      <div className="mt-8 max-w-3xl space-y-8">
+      <div className="mt-6 max-w-3xl border border-accent/40 bg-accent/5 p-4 text-[13px] leading-relaxed text-muted-foreground">
+        <p className="flex items-start gap-2">
+          <Icon name="Info" size={16} className="mt-0.5 shrink-0 text-accent" />
+          Название иконки берётся из библиотеки Lucide (например, Wrench, Home, Zap). Если название
+          указано неверно, на сайте покажется иконка по умолчанию.
+        </p>
+      </div>
+
+      <div className="mt-6 max-w-3xl space-y-8">
         <section className="space-y-4">
           <h2 className="font-display text-[16px] uppercase tracking-tight text-accent">Заголовок раздела</h2>
           <div className="space-y-2">
@@ -101,58 +158,111 @@ const AdminServices = () => {
 
         {data.groups.map((g, gi) => (
           <section key={g.id} className="space-y-4 border border-border p-5">
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground">Название вкладки</Label>
-                <Input
-                  value={g.label}
-                  onChange={(e) => updateGroup(gi, { label: e.target.value })}
-                  className="h-10 rounded-none border-border bg-background text-[13px]"
-                />
+            <div className="flex items-start justify-between gap-3">
+              <div className="grid flex-1 gap-3 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground">Название вкладки</Label>
+                  <Input
+                    value={g.label}
+                    onChange={(e) => updateGroup(gi, { label: e.target.value })}
+                    className="h-10 rounded-none border-border bg-background text-[13px]"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground">Подзаголовок вкладки</Label>
+                  <Input
+                    value={g.lead}
+                    onChange={(e) => updateGroup(gi, { lead: e.target.value })}
+                    className="h-10 rounded-none border-border bg-background text-[13px]"
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground">Подзаголовок вкладки</Label>
-                <Input
-                  value={g.lead}
-                  onChange={(e) => updateGroup(gi, { lead: e.target.value })}
-                  className="h-10 rounded-none border-border bg-background text-[13px]"
-                />
-              </div>
+              <button
+                type="button"
+                onClick={() => setRemoveGroupIndex(gi)}
+                className="flex h-10 w-10 shrink-0 items-center justify-center border border-border transition-colors hover:border-destructive hover:text-destructive"
+                title="Удалить категорию"
+              >
+                <Icon name="Trash2" size={15} />
+              </button>
             </div>
 
             <div className="space-y-3">
               {g.items.map((item, ii) => (
-                <div key={ii} className="grid gap-3 border-t border-border/60 pt-3 sm:grid-cols-[110px_1fr_1.4fr]">
-                  <div className="space-y-1">
-                    <Label className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground">Иконка</Label>
-                    <Input
-                      value={item.icon}
-                      onChange={(e) => updateItem(gi, ii, { icon: e.target.value })}
-                      className="h-9 rounded-none border-border bg-background text-[12px]"
-                    />
+                <div key={ii} className="flex items-end gap-2 border-t border-border/60 pt-3">
+                  <div className="grid flex-1 gap-3 sm:grid-cols-[110px_1fr_1.4fr]">
+                    <div className="space-y-1">
+                      <Label className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground">Иконка</Label>
+                      <Input
+                        value={item.icon}
+                        onChange={(e) => updateItem(gi, ii, { icon: e.target.value })}
+                        className="h-9 rounded-none border-border bg-background text-[12px]"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground">Заголовок</Label>
+                      <Input
+                        value={item.title}
+                        onChange={(e) => updateItem(gi, ii, { title: e.target.value })}
+                        className="h-9 rounded-none border-border bg-background text-[12px]"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground">Текст</Label>
+                      <Input
+                        value={item.text}
+                        onChange={(e) => updateItem(gi, ii, { text: e.target.value })}
+                        className="h-9 rounded-none border-border bg-background text-[12px]"
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-1">
-                    <Label className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground">Заголовок</Label>
-                    <Input
-                      value={item.title}
-                      onChange={(e) => updateItem(gi, ii, { title: e.target.value })}
-                      className="h-9 rounded-none border-border bg-background text-[12px]"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground">Текст</Label>
-                    <Input
-                      value={item.text}
-                      onChange={(e) => updateItem(gi, ii, { text: e.target.value })}
-                      className="h-9 rounded-none border-border bg-background text-[12px]"
-                    />
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeItem(gi, ii)}
+                    className="flex h-9 w-9 shrink-0 items-center justify-center border border-border transition-colors hover:border-destructive hover:text-destructive"
+                  >
+                    <Icon name="Trash2" size={14} />
+                  </button>
                 </div>
               ))}
+              <button
+                type="button"
+                onClick={() => addItem(gi)}
+                className="inline-flex items-center gap-2 text-[12px] uppercase tracking-[0.1em] text-accent transition-colors hover:text-foreground"
+              >
+                <Icon name="Plus" size={14} />
+                Добавить услугу
+              </button>
             </div>
           </section>
         ))}
+
+        <button
+          type="button"
+          onClick={addGroup}
+          className="inline-flex items-center gap-2 border border-dashed border-border px-5 py-3 font-display text-[13px] uppercase tracking-[0.08em] text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+        >
+          <Icon name="Plus" size={16} />
+          Добавить категорию услуг
+        </button>
       </div>
+
+      <AlertDialog open={removeGroupIndex != null} onOpenChange={(o) => !o && setRemoveGroupIndex(null)}>
+        <AlertDialogContent className="rounded-none border-border bg-card">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Удалить категорию услуг?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Вкладка и все услуги в ней будут удалены со страницы «Услуги» после сохранения.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-none">Отмена</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmRemoveGroup} className="rounded-none bg-destructive">
+              Удалить
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AdminLayout>
   );
 };

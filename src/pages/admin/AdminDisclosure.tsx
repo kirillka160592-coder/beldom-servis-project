@@ -4,8 +4,9 @@ import Icon from '@/components/ui/icon';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { contentApi } from '@/lib/api';
+import { contentApi, type MediaItem } from '@/lib/api';
 import { toast } from '@/hooks/use-toast';
+import MediaPicker from '@/components/admin/MediaPicker';
 
 type Doc = { title: string; url: string };
 type Section = { id: string; title: string; text: string; docs: Doc[] };
@@ -19,6 +20,7 @@ const AdminDisclosure = () => {
   const [data, setData] = useState<DisclosureData | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [pickerTarget, setPickerTarget] = useState<{ si: number; di: number } | null>(null);
 
   useEffect(() => {
     contentApi
@@ -171,6 +173,14 @@ const AdminDisclosure = () => {
                   </div>
                   <button
                     type="button"
+                    onClick={() => setPickerTarget({ si, di })}
+                    className="flex h-9 w-9 shrink-0 items-center justify-center border border-border transition-colors hover:border-primary hover:text-primary"
+                    title="Выбрать файл из библиотеки"
+                  >
+                    <Icon name="Images" size={14} />
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => removeDoc(si, di)}
                     className="flex h-9 w-9 shrink-0 items-center justify-center border border-border transition-colors hover:border-destructive hover:text-destructive"
                   >
@@ -190,6 +200,14 @@ const AdminDisclosure = () => {
           </section>
         ))}
       </div>
+
+      <MediaPicker
+        open={pickerTarget != null}
+        onOpenChange={(o) => !o && setPickerTarget(null)}
+        onSelect={(item: MediaItem) => {
+          if (pickerTarget) updateDoc(pickerTarget.si, pickerTarget.di, { url: item.url });
+        }}
+      />
     </AdminLayout>
   );
 };
