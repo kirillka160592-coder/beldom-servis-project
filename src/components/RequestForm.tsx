@@ -9,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import SectionHeading from '@/components/SectionHeading';
@@ -33,10 +32,6 @@ const RequestForm = () => {
   const [form, setForm] = useState({ name: '', phone: '', address: '', topic: '', message: '' });
   const [errors, setErrors] = useState<Errors>({});
   const [sent, setSent] = useState(false);
-
-  const [meters, setMeters] = useState({ account: '', cold: '', hot: '', power: '' });
-  const [meterErrors, setMeterErrors] = useState<Errors>({});
-  const [metersSent, setMetersSent] = useState(false);
 
   const set = (key: keyof typeof form) => (value: string) => {
     setForm((p) => ({ ...p, [key]: value }));
@@ -65,24 +60,9 @@ const RequestForm = () => {
     });
   };
 
-  const submitMeters = (ev: React.FormEvent) => {
-    ev.preventDefault();
-    const e: Errors = {};
-    if (meters.account.trim().length < 4) e.account = 'Введите номер лицевого счёта';
-    const numeric = (v: string) => v === '' || /^\d+([.,]\d{1,3})?$/.test(v.trim());
-    if (!numeric(meters.cold)) e.cold = 'Только цифры';
-    if (!numeric(meters.hot)) e.hot = 'Только цифры';
-    if (!numeric(meters.power)) e.power = 'Только цифры';
-    if (!meters.cold && !meters.hot && !meters.power) e.cold = 'Заполните хотя бы одно показание';
-    setMeterErrors(e);
-    if (Object.keys(e).length) return;
-    setMetersSent(true);
-    toast({ title: 'Показания переданы', description: 'Они попадут в квитанцию текущего месяца.' });
-  };
-
   const field = (name: string) =>
     `rounded-none border-border bg-background h-12 text-[15px] focus-visible:ring-1 focus-visible:ring-primary ${
-      errors[name] || meterErrors[name] ? 'border-destructive' : ''
+      errors[name] ? 'border-destructive' : ''
     }`;
 
   return (
@@ -137,23 +117,7 @@ const RequestForm = () => {
           </div>
 
           <div className="reveal bg-card p-6 sm:p-10">
-            <Tabs defaultValue="request">
-              <TabsList className="mb-8 flex h-auto w-full gap-2 rounded-none bg-transparent p-0">
-                <TabsTrigger
-                  value="request"
-                  className="flex-1 rounded-none border border-border bg-background px-4 py-3 font-display text-[13px] uppercase tracking-[0.1em] text-muted-foreground data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-none"
-                >
-                  Заявка на ремонт
-                </TabsTrigger>
-                <TabsTrigger
-                  value="meters"
-                  className="flex-1 rounded-none border border-border bg-background px-4 py-3 font-display text-[13px] uppercase tracking-[0.1em] text-muted-foreground data-[state=active]:border-primary data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-none"
-                >
-                  Показания счётчиков
-                </TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="request" className="animate-fade-in">
+            <div className="animate-fade-in">
                 {sent ? (
                   <div className="flex flex-col items-start gap-4 border border-primary/40 bg-background p-8">
                     <Icon name="CheckCircle2" size={34} className="text-accent" />
@@ -271,95 +235,7 @@ const RequestForm = () => {
                     </p>
                   </form>
                 )}
-              </TabsContent>
-
-              <TabsContent value="meters" className="animate-fade-in">
-                {metersSent ? (
-                  <div className="flex flex-col items-start gap-4 border border-primary/40 bg-background p-8">
-                    <Icon name="CheckCircle2" size={34} className="text-accent" />
-                    <h3 className="font-display text-[24px] uppercase leading-tight tracking-tight">
-                      Показания приняты
-                    </h3>
-                    <p className="text-[15px] leading-relaxed text-muted-foreground">
-                      Лицевой счёт {meters.account}. Данные учтены в начислениях за текущий месяц.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMetersSent(false);
-                        setMeters({ account: '', cold: '', hot: '', power: '' });
-                      }}
-                      className="mt-2 font-display text-[13px] uppercase tracking-[0.1em] text-primary hover:text-foreground"
-                    >
-                      Передать ещё раз
-                    </button>
-                  </div>
-                ) : (
-                  <form onSubmit={submitMeters} noValidate className="space-y-5">
-                    <div className="space-y-2">
-                      <Label htmlFor="account" className="text-[12px] uppercase tracking-[0.14em] text-muted-foreground">
-                        Лицевой счёт
-                      </Label>
-                      <Input
-                        id="account"
-                        value={meters.account}
-                        onChange={(e) => {
-                          setMeters((p) => ({ ...p, account: e.target.value }));
-                          setMeterErrors((p) => ({ ...p, account: '' }));
-                        }}
-                        placeholder="Например, 04512377"
-                        className={field('account')}
-                      />
-                      {meterErrors.account && (
-                        <p className="text-[13px] text-destructive">{meterErrors.account}</p>
-                      )}
-                    </div>
-
-                    <div className="grid gap-5 sm:grid-cols-3">
-                      {[
-                        { key: 'cold' as const, label: 'ХВС, м³', icon: 'Droplet' },
-                        { key: 'hot' as const, label: 'ГВС, м³', icon: 'Flame' },
-                        { key: 'power' as const, label: 'Электро, кВт·ч', icon: 'Zap' },
-                      ].map((m) => (
-                        <div key={m.key} className="space-y-2">
-                          <Label
-                            htmlFor={m.key}
-                            className="flex items-center gap-2 text-[12px] uppercase tracking-[0.14em] text-muted-foreground"
-                          >
-                            <Icon name={m.icon} fallback="Gauge" size={14} className="text-primary" />
-                            {m.label}
-                          </Label>
-                          <Input
-                            id={m.key}
-                            inputMode="decimal"
-                            value={meters[m.key]}
-                            onChange={(e) => {
-                              setMeters((p) => ({ ...p, [m.key]: e.target.value }));
-                              setMeterErrors((p) => ({ ...p, [m.key]: '' }));
-                            }}
-                            placeholder="0000"
-                            className={field(m.key)}
-                          />
-                          {meterErrors[m.key] && (
-                            <p className="text-[13px] text-destructive">{meterErrors[m.key]}</p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-
-                    <button
-                      type="submit"
-                      className="cut-btn w-full bg-primary px-8 py-4 font-display text-[15px] uppercase tracking-[0.08em] text-primary-foreground transition-transform duration-200 hover:-translate-y-0.5 sm:w-auto"
-                    >
-                      Передать показания
-                    </button>
-                    <p className="text-[13px] leading-relaxed text-muted-foreground">
-                      Показания принимаются с 20 по 25 число каждого месяца.
-                    </p>
-                  </form>
-                )}
-              </TabsContent>
-            </Tabs>
+            </div>
           </div>
         </div>
       </div>

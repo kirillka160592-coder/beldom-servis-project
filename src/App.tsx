@@ -10,7 +10,6 @@ import ServicesPage from "./pages/ServicesPage";
 import AboutPage from "./pages/AboutPage";
 import DisclosurePage from "./pages/DisclosurePage";
 import RequestPage from "./pages/RequestPage";
-import TariffsPage from "./pages/TariffsPage";
 import ContactsPage from "./pages/ContactsPage";
 import NotFound from "./pages/NotFound";
 import { AdminAuthProvider } from "./contexts/AdminAuthContext";
@@ -45,7 +44,6 @@ const App = () => (
             <Route path="/about" element={<AboutPage />} />
             <Route path="/disclosure" element={<DisclosurePage />} />
             <Route path="/request" element={<RequestPage />} />
-            <Route path="/tariffs" element={<TariffsPage />} />
             <Route path="/contacts" element={<ContactsPage />} />
             <Route path="/admin" element={<Navigate to="/admin/news" replace />} />
             <Route path="/admin/login" element={<AdminLogin />} />

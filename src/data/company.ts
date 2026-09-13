@@ -20,6 +20,5 @@ export const NAV_LINKS = [
   { path: '/about', label: 'О компании' },
   { path: '/disclosure', label: 'Раскрытие' },
   { path: '/request', label: 'Заявки' },
-  { path: '/tariffs', label: 'Тарифы' },
   { path: '/contacts', label: 'Контакты' },
 ] as const;
