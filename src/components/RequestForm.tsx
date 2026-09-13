@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -30,6 +31,7 @@ type Errors = Record<string, string>;
 const RequestForm = () => {
   const COMPANY = useCompany();
   const [form, setForm] = useState({ name: '', phone: '', address: '', topic: '', message: '' });
+  const [consent, setConsent] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
   const [sent, setSent] = useState(false);
 
@@ -46,6 +48,7 @@ const RequestForm = () => {
     if (form.address.trim().length < 5) e.address = 'Укажите улицу, дом и квартиру';
     if (!form.topic) e.topic = 'Выберите тему обращения';
     if (form.message.trim().length < 10) e.message = 'Опишите проблему подробнее (от 10 символов)';
+    if (!consent) e.consent = 'Нужно согласие на обработку персональных данных';
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -133,6 +136,7 @@ const RequestForm = () => {
                       onClick={() => {
                         setSent(false);
                         setForm({ name: '', phone: '', address: '', topic: '', message: '' });
+                        setConsent(false);
                       }}
                       className="mt-2 font-display text-[13px] uppercase tracking-[0.1em] text-primary hover:text-foreground"
                     >
@@ -224,15 +228,34 @@ const RequestForm = () => {
                       {errors.message && <p className="text-[13px] text-destructive">{errors.message}</p>}
                     </div>
 
+                    <div className="space-y-2">
+                      <div className="flex items-start gap-3">
+                        <Checkbox
+                          id="consent"
+                          checked={consent}
+                          onCheckedChange={(checked) => {
+                            setConsent(checked === true);
+                            setErrors((p) => ({ ...p, consent: '' }));
+                          }}
+                          className={`mt-0.5 ${errors.consent ? 'border-destructive' : ''}`}
+                        />
+                        <Label
+                          htmlFor="consent"
+                          className="text-[13px] font-normal leading-relaxed text-muted-foreground"
+                        >
+                          Даю согласие на обработку персональных данных в соответствии с
+                          законодательством РФ
+                        </Label>
+                      </div>
+                      {errors.consent && <p className="text-[13px] text-destructive">{errors.consent}</p>}
+                    </div>
+
                     <button
                       type="submit"
                       className="cut-btn w-full bg-primary px-8 py-4 font-display text-[15px] uppercase tracking-[0.08em] text-primary-foreground transition-transform duration-200 hover:-translate-y-0.5 sm:w-auto"
                     >
                       Отправить заявку
                     </button>
-                    <p className="text-[13px] leading-relaxed text-muted-foreground">
-                      Отправляя форму, вы соглашаетесь на обработку персональных данных.
-                    </p>
                   </form>
                 )}
             </div>
