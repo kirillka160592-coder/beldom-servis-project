@@ -14,84 +14,40 @@ import {
 } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
 import SectionHeading from '@/components/SectionHeading';
+import { useContentBlock } from '@/hooks/use-content';
 
-const SECTIONS = [
-  {
-    id: 'org',
-    title: 'Общая информация об организации',
-    text: 'Сведения об управляющей организации, реквизиты, лицензия, структура и контакты руководства.',
-    docs: [
-      'Устав ООО «БелорецкДомСервис»',
-      'Лицензия на управление МКД',
-      'Свидетельство о постановке на налоговый учёт',
-      'Сведения о членстве в СРО и объединениях',
-    ],
-  },
-  {
-    id: 'houses',
-    title: 'Перечень домов в управлении',
-    text: 'Адреса многоквартирных домов, год постройки, этажность, площадь и характеристики общего имущества.',
-    docs: [
-      'Реестр многоквартирных домов на 2026 год',
-      'Технические паспорта домов',
-      'Перечень домов, где расторгнут договор управления',
-    ],
-  },
-  {
-    id: 'contracts',
-    title: 'Договоры управления',
-    text: 'Типовой договор управления, перечень работ и услуг, порядок изменения условий обслуживания.',
-    docs: [
-      'Типовой договор управления МКД',
-      'Перечень работ и услуг по содержанию общего имущества',
-      'Протоколы общих собраний собственников',
-    ],
-  },
-  {
-    id: 'reports',
-    title: 'Отчёты и финансовая отчётность',
-    text: 'Годовые отчёты о выполнении договора управления по каждому дому, бухгалтерская отчётность.',
-    docs: [
-      'Годовой отчёт о выполнении договора управления за 2025 год',
-      'Бухгалтерский баланс за 2025 год',
-      'Отчёт о расходовании средств текущего ремонта',
-    ],
-  },
-  {
-    id: 'works',
-    title: 'Выполняемые работы и планы',
-    text: 'План работ по текущему ремонту, подготовка к отопительному сезону, графики уборки и осмотров.',
-    docs: [
-      'План текущего ремонта на 2026 год',
-      'График подготовки домов к отопительному сезону',
-      'График санитарного содержания подъездов',
-    ],
-  },
-];
+type Doc = { title: string; url: string };
+type Section = { id: string; title: string; text: string; docs: Doc[] };
+type DisclosureData = {
+  heading: { eyebrow: string; title: string; description: string };
+  gisLink: string;
+  sections: Section[];
+};
+
+const FALLBACK: DisclosureData = {
+  heading: { eyebrow: 'Раскрытие информации', title: 'Всё открыто по 731-ПП', description: '' },
+  gisLink: 'https://dom.gosuslugi.ru',
+  sections: [],
+};
 
 const Disclosure = () => {
-  const [active, setActive] = useState<(typeof SECTIONS)[number] | null>(null);
+  const { data } = useContentBlock<DisclosureData>('disclosure', FALLBACK);
+  const [active, setActive] = useState<Section | null>(null);
 
   return (
-    <section id="disclosure" className="border-b border-border bg-card py-24 lg:py-32">
+    <section className="border-b border-border bg-card py-24 lg:py-32">
       <div className="mx-auto max-w-[1360px] px-5 lg:px-10">
         <div className="grid gap-14 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
           <div>
             <SectionHeading
               index="04"
-              eyebrow="Раскрытие информации"
-              title={
-                <>
-                  Всё открыто
-                  <br />
-                  по 731-ПП
-                </>
-              }
-              description="Управляющая организация обязана раскрывать информацию о своей работе. Мы публикуем документы в ГИС ЖКХ и дублируем их здесь — чтобы искать не пришлось."
+              eyebrow={data.heading.eyebrow}
+              title={data.heading.title}
+              description={data.heading.description}
             />
             <div className="reveal mt-8 space-y-3">
               <a
-                href="https://dom.gosuslugi.ru"
+                href={data.gisLink}
                 target="_blank"
                 rel="noreferrer noopener"
                 className="cut-btn inline-flex items-center gap-3 bg-primary px-7 py-4 font-display text-[14px] uppercase tracking-[0.08em] text-primary-foreground transition-transform duration-200 hover:-translate-y-0.5"
@@ -107,7 +63,7 @@ const Disclosure = () => {
 
           <div className="reveal">
             <Accordion type="single" collapsible className="border-t border-border">
-              {SECTIONS.map((s, i) => (
+              {data.sections.map((s, i) => (
                 <AccordionItem key={s.id} value={s.id} className="border-b border-border">
                   <AccordionTrigger className="group gap-6 py-6 text-left hover:no-underline">
                     <span className="flex flex-1 items-start gap-5">
@@ -149,9 +105,20 @@ const Disclosure = () => {
           </DialogHeader>
           <ul className="mt-2 divide-y divide-border border-y border-border">
             {active?.docs.map((doc) => (
-              <li key={doc} className="flex items-center gap-3 py-3.5">
+              <li key={doc.title} className="flex items-center gap-3 py-3.5">
                 <Icon name="FileText" size={18} className="shrink-0 text-primary" />
-                <span className="text-[15px] leading-snug">{doc}</span>
+                {doc.url ? (
+                  <a
+                    href={doc.url}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="text-[15px] leading-snug text-foreground transition-colors hover:text-primary"
+                  >
+                    {doc.title}
+                  </a>
+                ) : (
+                  <span className="text-[15px] leading-snug">{doc.title}</span>
+                )}
               </li>
             ))}
           </ul>

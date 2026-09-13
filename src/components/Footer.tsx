@@ -1,7 +1,10 @@
 import { Link } from 'react-router-dom';
-import { COMPANY, NAV_LINKS } from '@/data/company';
+import { NAV_LINKS } from '@/data/company';
+import { useCompany } from '@/hooks/use-company';
 
-const Footer = () => (
+const Footer = () => {
+  const COMPANY = useCompany();
+  return (
   <footer className="bg-background py-14">
     <div className="mx-auto max-w-[1360px] px-5 lg:px-10">
       <div className="grid gap-10 border-b border-border pb-10 md:grid-cols-[1.2fr_1fr_1fr]">
@@ -67,6 +70,7 @@ const Footer = () => (
       </div>
     </div>
   </footer>
-);
+  );
+};
 
 export default Footer;

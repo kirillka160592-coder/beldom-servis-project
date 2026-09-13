@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Link } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import SectionHeading from '@/components/SectionHeading';
-import { COMPANY } from '@/data/company';
+import { useCompany } from '@/hooks/use-company';
 import { toast } from '@/hooks/use-toast';
 
 const TOPICS = [
@@ -29,6 +29,7 @@ const TOPICS = [
 type Errors = Record<string, string>;
 
 const RequestForm = () => {
+  const COMPANY = useCompany();
   const [form, setForm] = useState({ name: '', phone: '', address: '', topic: '', message: '' });
   const [errors, setErrors] = useState<Errors>({});
   const [sent, setSent] = useState(false);

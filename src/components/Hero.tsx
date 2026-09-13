@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
-import { COMPANY } from '@/data/company';
+import { useCompany } from '@/hooks/use-company';
 
 const Hero = () => {
+  const COMPANY = useCompany();
   return (
     <section className="hero-stage">
       <div className="hero-left">

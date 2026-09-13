@@ -1,0 +1,23 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS preflight",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Get news list",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Create without auth",
+      "method": "POST",
+      "path": "/",
+      "body": {"category": "Работы", "date": "2026-01-01", "title": "Test", "excerpt": "Test"},
+      "expectedStatus": 401
+    }
+  ]
+}

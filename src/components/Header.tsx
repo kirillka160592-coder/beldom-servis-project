@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
-import { COMPANY, NAV_LINKS } from '@/data/company';
+import { NAV_LINKS } from '@/data/company';
+import { useCompany } from '@/hooks/use-company';
 
 const Header = () => {
+  const COMPANY = useCompany();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {

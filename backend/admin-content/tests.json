@@ -1,0 +1,23 @@
+{
+  "tests": [
+    {
+      "name": "OPTIONS preflight",
+      "method": "OPTIONS",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Get all content blocks",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Update without auth",
+      "method": "PUT",
+      "path": "/",
+      "body": {"section": "about", "data": {}},
+      "expectedStatus": 401
+    }
+  ]
+}

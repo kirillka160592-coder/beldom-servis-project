@@ -1,3 +1,5 @@
+export type CompanyData = typeof COMPANY;
+
 export const COMPANY = {
   name: 'ООО «БелорецкДомСервис»',
   short: 'БелорецкДомСервис',
