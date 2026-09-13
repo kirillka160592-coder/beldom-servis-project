@@ -88,17 +88,25 @@ export const newsApi = {
     request<{ ok: true }>('admin-news', { method: 'DELETE', query: { id: String(id) }, auth: true }),
 };
 
+export type MediaItem = {
+  id: number;
+  url: string;
+  filename: string | null;
+  label: string | null;
+  createdAt: string;
+};
+
 export const uploadApi = {
-  upload: (file: File): Promise<{ url: string }> =>
+  upload: (file: File, label?: string): Promise<MediaItem> =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = async () => {
         try {
           const result = reader.result as string;
           const data = result.split(',')[1];
-          const res = await request<{ url: string }>('admin-upload', {
+          const res = await request<MediaItem>('admin-upload', {
             method: 'POST',
-            body: { contentType: file.type, data },
+            body: { contentType: file.type, data, filename: file.name, label: label || '' },
             auth: true,
           });
           resolve(res);
@@ -109,4 +117,7 @@ export const uploadApi = {
       reader.onerror = () => reject(new Error('Не удалось прочитать файл'));
       reader.readAsDataURL(file);
     }),
+  list: () => request<MediaItem[]>('admin-upload', { auth: true }),
+  remove: (id: number) =>
+    request<{ ok: true }>('admin-upload', { method: 'DELETE', query: { id: String(id) }, auth: true }),
 };

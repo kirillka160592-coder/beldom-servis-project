@@ -10,6 +10,7 @@ const ADMIN_NAV = [
   { path: '/admin/about', label: 'О компании', icon: 'Building2' },
   { path: '/admin/disclosure', label: 'Раскрытие информации', icon: 'FolderOpen' },
   { path: '/admin/contacts', label: 'Контакты', icon: 'Phone' },
+  { path: '/admin/media', label: 'Медиабиблиотека', icon: 'Images' },
 ];
 
 const AdminLayout = ({ children }: { children: ReactNode }) => {

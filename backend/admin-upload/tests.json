@@ -12,6 +12,12 @@
       "path": "/",
       "body": {"contentType": "image/png", "data": "aGVsbG8="},
       "expectedStatus": 401
+    },
+    {
+      "name": "List without auth",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 401
     }
   ]
 }

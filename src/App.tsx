@@ -19,6 +19,7 @@ import AdminServices from "./pages/admin/AdminServices";
 import AdminAbout from "./pages/admin/AdminAbout";
 import AdminDisclosure from "./pages/admin/AdminDisclosure";
 import AdminContacts from "./pages/admin/AdminContacts";
+import AdminMedia from "./pages/admin/AdminMedia";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,7 @@ const App = () => (
             <Route path="/admin/about" element={<AdminAbout />} />
             <Route path="/admin/disclosure" element={<AdminDisclosure />} />
             <Route path="/admin/contacts" element={<AdminContacts />} />
+            <Route path="/admin/media" element={<AdminMedia />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
