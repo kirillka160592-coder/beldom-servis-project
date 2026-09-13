@@ -52,7 +52,7 @@ const About = () => {
           </div>
 
           <div className="reveal">
-            <div className="cut-card relative bg-primary p-8 lg:p-10">
+            <div className="cut-card bg-warm-gradient relative p-8 lg:p-10">
               <div className="font-display text-[13px] uppercase tracking-[0.22em] text-primary-foreground/70">
                 БелорецкДомСервис в цифрах
               </div>

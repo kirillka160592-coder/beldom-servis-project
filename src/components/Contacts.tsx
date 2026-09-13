@@ -81,7 +81,7 @@ const Contacts = () => {
             </div>
           </div>
 
-          <div className="relative min-h-[380px] overflow-hidden bg-primary">
+          <div className="bg-warm-gradient relative min-h-[380px] overflow-hidden">
             <div className="absolute inset-0 grain opacity-40" aria-hidden="true" />
             <div className="absolute inset-x-0 bottom-0 h-[60%]" aria-hidden="true">
               <div className="absolute inset-x-0 bottom-0 flex items-end justify-center gap-3">
