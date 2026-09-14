@@ -233,11 +233,11 @@ const News = () => {
               <CarouselContent>
                 {active.images.map((src, i) => (
                   <CarouselItem key={src}>
-                    <div className="aspect-[16/10] w-full overflow-hidden bg-background">
+                    <div className="flex max-h-[70vh] w-full items-center justify-center overflow-hidden bg-background">
                       <img
                         src={src}
                         alt={`${active.title} — фото ${i + 1}`}
-                        className="h-full w-full object-cover"
+                        className="max-h-[70vh] w-auto max-w-full object-contain"
                       />
                     </div>
                   </CarouselItem>
