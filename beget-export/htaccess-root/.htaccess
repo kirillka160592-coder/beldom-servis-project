@@ -1,0 +1,11 @@
+RewriteEngine On
+
+# Не трогаем реальные файлы, папку api и uploads
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_URI} ^/api/ [OR]
+RewriteCond %{REQUEST_URI} ^/uploads/
+RewriteRule ^ - [L]
+
+# Все остальные запросы (в том числе /admin/news) отдаём на index.html,
+# дальше маршрутизацию берёт на себя React
+RewriteRule ^ index.html [L]
