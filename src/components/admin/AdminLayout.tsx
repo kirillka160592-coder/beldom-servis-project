@@ -3,6 +3,7 @@ import { NavLink, Navigate } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { useAdminAuth } from '@/contexts/AdminAuthContext';
 import { COMPANY } from '@/data/company';
+import logoIcon from '@/assets/logo-icon.png';
 
 const ADMIN_NAV = [
   { path: '/admin/news', label: 'Новости', icon: 'Newspaper' },
@@ -30,7 +31,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
     <div className="min-h-screen bg-background lg:grid lg:grid-cols-[260px_1fr]">
       <aside className="border-b border-border bg-card lg:border-b-0 lg:border-r">
         <div className="flex items-center gap-3 border-b border-border px-6 py-5">
-          <span className="cut-mark h-7 w-7 bg-primary" aria-hidden="true" />
+          <img src={logoIcon} alt={COMPANY.short} className="h-8 w-auto" />
           <span className="font-display text-[14px] font-semibold uppercase leading-none tracking-[0.02em]">
             {COMPANY.short}
           </span>

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { NAV_LINKS } from '@/data/company';
 import { useCompany } from '@/hooks/use-company';
+import logoIcon from '@/assets/logo-icon.png';
 
 const Footer = () => {
   const COMPANY = useCompany();
@@ -10,7 +11,7 @@ const Footer = () => {
       <div className="grid gap-10 border-b border-border pb-10 md:grid-cols-[1.2fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-3">
-            <span className="cut-mark h-8 w-8 bg-primary" aria-hidden="true" />
+            <img src={logoIcon} alt={COMPANY.short} className="h-10 w-auto" />
             <span className="font-display text-[18px] font-semibold uppercase leading-none tracking-[0.02em]">
               {COMPANY.short}
             </span>

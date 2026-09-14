@@ -3,6 +3,7 @@ import { Link, NavLink } from 'react-router-dom';
 import Icon from '@/components/ui/icon';
 import { NAV_LINKS } from '@/data/company';
 import { useCompany } from '@/hooks/use-company';
+import logoIcon from '@/assets/logo-icon.png';
 
 const Header = () => {
   const COMPANY = useCompany();
@@ -20,7 +21,7 @@ const Header = () => {
       <header className="fixed inset-x-0 top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
         <div className="mx-auto flex h-[68px] max-w-[1360px] items-center justify-between gap-6 px-5 lg:px-10">
           <Link to="/" className="flex items-center gap-3">
-            <span className="cut-mark h-7 w-7 bg-primary" aria-hidden="true" />
+            <img src={logoIcon} alt={COMPANY.short} className="h-9 w-auto" />
             <span className="font-display text-base font-semibold uppercase leading-none tracking-[0.02em]">
               {COMPANY.short}
             </span>
