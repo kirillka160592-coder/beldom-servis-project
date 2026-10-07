@@ -7,8 +7,8 @@ define('DB_PASS', 'your_password'); // пароль от базы MySQL
 
 // Папка, куда сохраняются загруженные картинки и документы (должна существовать и быть доступна на запись)
 define('UPLOAD_DIR', __DIR__ . '/../uploads');
-// Публичный URL этой папки (замените на ваш домен)
-define('UPLOAD_URL', 'https://ВАШ-ДОМЕН.ru/uploads');
+// Публичный путь к этой папке. Относительный путь работает на любом домене и с http, и с https
+define('UPLOAD_URL', '/uploads');
 
 function db(): PDO {
     static $pdo = null;
