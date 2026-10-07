@@ -1,6 +1,15 @@
-import funcUrls from '../../backend/func2url.json';
+// ЭТОТ ФАЙЛ — замена для src/lib/api.ts при переносе на Beget.
+// Отличие от оригинала: вместо func2url.json используются относительные пути
+// к PHP-скриптам в папке /api на вашем хостинге.
 
-const URLS = funcUrls as Record<string, string>;
+const API_BASE = '/api'; // папка на хостинге, куда вы загрузили файлы из beget-export/api
+
+const URLS: Record<string, string> = {
+  'admin-auth': `${API_BASE}/admin-auth.php`,
+  'admin-content': `${API_BASE}/admin-content.php`,
+  'admin-news': `${API_BASE}/admin-news.php`,
+  'admin-upload': `${API_BASE}/admin-upload.php`,
+};
 
 const TOKEN_KEY = 'admin_token';
 
@@ -23,7 +32,7 @@ async function request<T>(
   const base = URLS[fn];
   if (!base) throw new Error(`Неизвестная функция: ${fn}`);
 
-  const url = new URL(base);
+  const url = new URL(base, window.location.origin);
   if (options.query) {
     Object.entries(options.query).forEach(([k, v]) => url.searchParams.set(k, v));
   }
