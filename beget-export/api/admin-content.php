@@ -8,7 +8,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 $pdo = db();
 
 if ($method === 'GET') {
-    $section = $_GET['section'] ?? null;
+    $section = (isset($_GET['section']) ? $_GET['section'] : null);
 
     if ($section) {
         $stmt = $pdo->prepare('SELECT section, data FROM content_blocks WHERE section = ?');
@@ -30,8 +30,8 @@ if ($method === 'PUT') {
     if (!check_auth($pdo)) json_response(401, ['error' => 'Требуется авторизация']);
 
     $body = read_json_body();
-    $section = $body['section'] ?? null;
-    $data = $body['data'] ?? null;
+    $section = (isset($body['section']) ? $body['section'] : null);
+    $data = (isset($body['data']) ? $body['data'] : null);
     if (!$section || $data === null) {
         json_response(400, ['error' => 'Не указан раздел или данные']);
     }

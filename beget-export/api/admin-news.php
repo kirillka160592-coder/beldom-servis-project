@@ -6,7 +6,7 @@ handle_preflight();
 $method = $_SERVER['REQUEST_METHOD'];
 $pdo = db();
 
-function news_row_to_array(array $row): array {
+function news_row_to_array(array $row) {
     return [
         'id' => (int) $row['id'],
         'category' => $row['category'],
@@ -20,7 +20,7 @@ function news_row_to_array(array $row): array {
 }
 
 if ($method === 'GET') {
-    $newsId = $_GET['id'] ?? null;
+    $newsId = (isset($_GET['id']) ? $_GET['id'] : null);
 
     if ($newsId) {
         $stmt = $pdo->prepare('SELECT * FROM news WHERE id = ?');
@@ -44,13 +44,13 @@ if ($method === 'POST') {
         'VALUES (?, ?, ?, ?, ?, ?, ?)'
     );
     $stmt->execute([
-        $body['category'] ?? '',
-        $body['date'] ?? null,
-        $body['title'] ?? '',
-        $body['excerpt'] ?? '',
-        json_encode($body['body'] ?? [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-        $body['addresses'] ?? null,
-        json_encode($body['images'] ?? [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+        (isset($body['category']) ? $body['category'] : ''),
+        (isset($body['date']) ? $body['date'] : null),
+        (isset($body['title']) ? $body['title'] : ''),
+        (isset($body['excerpt']) ? $body['excerpt'] : ''),
+        json_encode((isset($body['body']) ? $body['body'] : []), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+        (isset($body['addresses']) ? $body['addresses'] : null),
+        json_encode((isset($body['images']) ? $body['images'] : []), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
     ]);
 
     json_response(200, ['id' => (int) $pdo->lastInsertId()]);
@@ -60,7 +60,7 @@ if ($method === 'PUT') {
     if (!check_auth($pdo)) json_response(401, ['error' => 'Требуется авторизация']);
 
     $body = read_json_body();
-    $newsId = $body['id'] ?? null;
+    $newsId = (isset($body['id']) ? $body['id'] : null);
     if (!$newsId) json_response(400, ['error' => 'Не указан id']);
 
     $stmt = $pdo->prepare(
@@ -68,13 +68,13 @@ if ($method === 'PUT') {
         'body = ?, addresses = ?, images = ?, updated_at = NOW() WHERE id = ?'
     );
     $stmt->execute([
-        $body['category'] ?? '',
-        $body['date'] ?? null,
-        $body['title'] ?? '',
-        $body['excerpt'] ?? '',
-        json_encode($body['body'] ?? [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-        $body['addresses'] ?? null,
-        json_encode($body['images'] ?? [], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+        (isset($body['category']) ? $body['category'] : ''),
+        (isset($body['date']) ? $body['date'] : null),
+        (isset($body['title']) ? $body['title'] : ''),
+        (isset($body['excerpt']) ? $body['excerpt'] : ''),
+        json_encode((isset($body['body']) ? $body['body'] : []), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+        (isset($body['addresses']) ? $body['addresses'] : null),
+        json_encode((isset($body['images']) ? $body['images'] : []), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
         $newsId,
     ]);
 
@@ -84,7 +84,7 @@ if ($method === 'PUT') {
 if ($method === 'DELETE') {
     if (!check_auth($pdo)) json_response(401, ['error' => 'Требуется авторизация']);
 
-    $newsId = $_GET['id'] ?? null;
+    $newsId = (isset($_GET['id']) ? $_GET['id'] : null);
     if (!$newsId) json_response(400, ['error' => 'Не указан id']);
 
     $stmt = $pdo->prepare('DELETE FROM news WHERE id = ?');

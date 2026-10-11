@@ -40,10 +40,10 @@ if ($method === 'GET') {
 
 if ($method === 'POST') {
     $body = read_json_body();
-    $contentType = $body['contentType'] ?? 'image/jpeg';
-    $dataB64 = $body['data'] ?? '';
-    $filename = $body['filename'] ?? '';
-    $label = $body['label'] ?? '';
+    $contentType = (isset($body['contentType']) ? $body['contentType'] : 'image/jpeg');
+    $dataB64 = (isset($body['data']) ? $body['data'] : '');
+    $filename = (isset($body['filename']) ? $body['filename'] : '');
+    $label = (isset($body['label']) ? $body['label'] : '');
 
     if (!isset($ALLOWED_TYPES[$contentType])) {
         json_response(400, ['error' => 'Недопустимый тип файла']);
@@ -58,7 +58,7 @@ if ($method === 'POST') {
     if (!is_dir(UPLOAD_DIR)) {
         mkdir(UPLOAD_DIR, 0755, true);
     }
-    $key = 'media_' . bin2hex(random_bytes(16)) . '.' . $ext;
+    $key = 'media_' . bin2hex(openssl_random_pseudo_bytes(16)) . '.' . $ext;
     $filePath = UPLOAD_DIR . '/' . $key;
     file_put_contents($filePath, $raw);
 
@@ -80,7 +80,7 @@ if ($method === 'POST') {
 }
 
 if ($method === 'DELETE') {
-    $mediaId = $_GET['id'] ?? null;
+    $mediaId = (isset($_GET['id']) ? $_GET['id'] : null);
     if (!$mediaId) json_response(400, ['error' => 'Не указан id']);
 
     $stmt = $pdo->prepare('DELETE FROM media_library WHERE id = ?');

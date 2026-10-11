@@ -10,7 +10,7 @@ define('UPLOAD_DIR', __DIR__ . '/../uploads');
 // Публичный путь к этой папке. Относительный путь работает на любом домене и с http, и с https
 define('UPLOAD_URL', '/uploads');
 
-function db(): PDO {
+function db() {
     static $pdo = null;
     if ($pdo === null) {
         $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
@@ -22,33 +22,33 @@ function db(): PDO {
     return $pdo;
 }
 
-function send_cors(): void {
+function send_cors() {
     header('Access-Control-Allow-Origin: *');
     header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
     header('Access-Control-Allow-Headers: Content-Type, X-Authorization');
     header('Access-Control-Max-Age: 86400');
 }
 
-function json_response(int $status, array $data): void {
+function json_response($status, array $data) {
     http_response_code($status);
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
 }
 
-function read_json_body(): array {
+function read_json_body() {
     $raw = file_get_contents('php://input');
     if (!$raw) return [];
     $data = json_decode($raw, true);
     return is_array($data) ? $data : [];
 }
 
-function get_bearer_token(): string {
-    $header = $_SERVER['HTTP_X_AUTHORIZATION'] ?? '';
+function get_bearer_token() {
+    $header = (isset($_SERVER['HTTP_X_AUTHORIZATION']) ? $_SERVER['HTTP_X_AUTHORIZATION'] : '');
     return trim(str_replace('Bearer ', '', $header));
 }
 
-function check_auth(PDO $pdo): bool {
+function check_auth(PDO $pdo) {
     $token = get_bearer_token();
     if (!$token) return false;
     $stmt = $pdo->prepare('SELECT 1 FROM admin_sessions WHERE token = ? AND expires_at > NOW()');
@@ -56,9 +56,9 @@ function check_auth(PDO $pdo): bool {
     return (bool) $stmt->fetchColumn();
 }
 
-function handle_preflight(): void {
+function handle_preflight() {
     send_cors();
-    if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
+    if (((isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '')) === 'OPTIONS') {
         http_response_code(200);
         exit;
     }

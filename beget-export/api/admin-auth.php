@@ -4,14 +4,14 @@ require_once __DIR__ . '/config.php';
 handle_preflight();
 
 $method = $_SERVER['REQUEST_METHOD'];
-$action = $_GET['action'] ?? '';
+$action = (isset($_GET['action']) ? $_GET['action'] : '');
 $pdo = db();
 
-function verify_password_php(string $password, string $storedHash): bool {
+function verify_password_php($password, $storedHash) {
     // Формат хеша, унаследованный от Python: "salt_hex$hash_hex" (pbkdf2_hmac sha256, 200000 итераций)
     $parts = explode('$', $storedHash);
     if (count($parts) !== 2) return false;
-    [$saltHex, $hashHex] = $parts;
+    list($saltHex, $hashHex) = $parts;
     $salt = hex2bin($saltHex);
     $expected = hex2bin($hashHex);
     $computed = hash_pbkdf2('sha256', $password, $salt, 200000, 32, true);
@@ -20,8 +20,8 @@ function verify_password_php(string $password, string $storedHash): bool {
 
 if ($method === 'POST' && $action === 'login') {
     $body = read_json_body();
-    $login = trim($body['login'] ?? '');
-    $password = $body['password'] ?? '';
+    $login = trim((isset($body['login']) ? $body['login'] : ''));
+    $password = (isset($body['password']) ? $body['password'] : '');
 
     $stmt = $pdo->prepare('SELECT id, password_hash FROM admin_users WHERE login = ?');
     $stmt->execute([$login]);
@@ -31,7 +31,7 @@ if ($method === 'POST' && $action === 'login') {
         json_response(401, ['error' => 'Неверный логин или пароль']);
     }
 
-    $token = bin2hex(random_bytes(32));
+    $token = bin2hex(openssl_random_pseudo_bytes(32));
     $expiresAt = date('Y-m-d H:i:s', time() + 7 * 24 * 3600);
     $stmt = $pdo->prepare('INSERT INTO admin_sessions (user_id, token, expires_at) VALUES (?, ?, ?)');
     $stmt->execute([$row['id'], $token, $expiresAt]);
